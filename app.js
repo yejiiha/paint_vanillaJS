@@ -3,6 +3,7 @@ const ctx = canvas.getContext("2d"); // Context of canvas is what controls pixel
 const colors = document.getElementsByClassName("jsColor");
 const range = document.getElementById("jsRange");
 const mode = document.getElementById("jsMode");
+const saveBtn = document.getElementById("jsSave");
 
 const INITIAL_COLOR = "#2c2c2c";
 const CANVAS_SIZE = 700; // Canvas should have css size and pixel modifier size
@@ -10,6 +11,8 @@ const CANVAS_SIZE = 700; // Canvas should have css size and pixel modifier size
 canvas.width = CANVAS_SIZE;
 canvas.height = CANVAS_SIZE;
 
+ctx.fillStyle = "white";
+ctx.fillRect(0, 0, canvas.width, canvas.height); // Fixing a bug that background color of canvas is transparent when you save the images
 ctx.strokeStyle = INITIAL_COLOR; // All the lines inside context have color
 ctx.fillStyle = INITIAL_COLOR;
 ctx.lineWidth = 2.5; // The width of line is 2.5px
@@ -65,12 +68,26 @@ function handleFillClick() {
   }
 }
 
+function handleRightClick(event) {
+  event.preventDefault();
+}
+
+function handleSaveClick() {
+  const image = canvas.toDataURL("image/png");
+  const link = document.createElement("a");
+
+  link.href = image;
+  link.download = "PaintJs[🎨]";
+  link.click();
+}
+
 if (canvas) {
   canvas.addEventListener("mousemove", onMouseMove);
   canvas.addEventListener("mousedown", startPainting); // Click on mouse
   canvas.addEventListener("mouseup", stopPainting);
   canvas.addEventListener("mouseleave", stopPainting);
   canvas.addEventListener("click", handleFillClick);
+  canvas.addEventListener("contextmenu", handleRightClick);
 }
 
 Array.from(colors).forEach((color) =>
@@ -83,4 +100,8 @@ if (range) {
 
 if (mode) {
   mode.addEventListener("click", handleModeClick);
+}
+
+if (saveBtn) {
+  saveBtn.addEventListener("click", handleSaveClick);
 }
