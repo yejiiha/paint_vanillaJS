@@ -4,6 +4,8 @@ const colors = document.getElementsByClassName("jsColor");
 const range = document.getElementById("jsRange");
 const mode = document.getElementById("jsMode");
 const saveBtn = document.getElementById("jsSave");
+const resetBtn = document.getElementById("jsReset");
+const eraseBtn = document.getElementById("jsErase");
 
 const INITIAL_COLOR = "#2c2c2c";
 const CANVAS_SIZE = 700; // Canvas should have css size and pixel modifier size
@@ -16,9 +18,11 @@ ctx.fillRect(0, 0, canvas.width, canvas.height); // Fixing a bug that background
 ctx.strokeStyle = INITIAL_COLOR; // All the lines inside context have color
 ctx.fillStyle = INITIAL_COLOR;
 ctx.lineWidth = 2.5; // The width of line is 2.5px
+ctx.lineCap = "round";
 
 let painting = false;
 let filling = false;
+let old = null;
 
 function stopPainting() {
   painting = false;
@@ -55,10 +59,10 @@ function handleRangeChange(event) {
 function handleModeClick(event) {
   if (filling === true) {
     filling = false;
-    mode.innerText = "Fill";
+    mode.innerText = "Paint";
   } else {
     filling = true;
-    mode.innerText = "Paint";
+    mode.innerText = "Fill";
   }
 }
 
@@ -79,6 +83,29 @@ function handleSaveClick() {
   link.href = image;
   link.download = "PaintJs[🎨]";
   link.click();
+}
+
+function handleResetClick() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function handleEraseClick() {
+  const x = event.offsetX;
+  const y = event.offsetY;
+
+  ctx.globalCompositeOperation = "destination-out";
+
+  ctx.beginPath();
+  ctx.beginPath();
+  ctx.arc(x, y, 10, 0, 2 * Math.PI);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(old.x, old.y);
+  ctx.lineTo(x, y);
+  ctx.stroke();
+
+  old = { x: x, y: y };
 }
 
 if (canvas) {
@@ -104,4 +131,12 @@ if (mode) {
 
 if (saveBtn) {
   saveBtn.addEventListener("click", handleSaveClick);
+}
+
+if (resetBtn) {
+  resetBtn.addEventListener("click", handleResetClick);
+}
+
+if (eraseBtn) {
+  eraseBtn.addEventListener("click", handleEraseClick);
 }
